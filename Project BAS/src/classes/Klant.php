@@ -7,17 +7,18 @@ use PDO;
 
 include_once "functions.php";
 
+
 class Klant extends Database {
     public $klantId;
-    public $klantemail = null;
-    public $klantnaam;
-    public $klantwoonplaats;
+    public $klantEmail = null;
+    public $klantNaam;
+    public $klantWoonplaats;
     public $klantAdres;
     public $klantPostcode;
     private $table_name = "Klant";    
 
     // Methods
-    
+
     /**
      * Summary of crudKlant
      * @return void
@@ -35,17 +36,16 @@ class Klant extends Database {
      * @return array
      */
     public function getKlanten() : array {
-        // testdata
-        $lijst = [
-            ['klantId' => 1, 'klantEmail' => 'test1@example.com', 'klantNaam' => 'Test 1', 'klantWoonplaats' => 'City 1', 'klantAdres' => 'Address 1', 'klantPostcode' => '1234AB'],
-            ['klantId' => 2, 'klantEmail' => 'test2@example.com', 'klantNaam' => 'Test 2', 'klantWoonplaats' => 'City 2', 'klantAdres' => 'Address 2', 'klantPostcode' => '5678CD']
-            // Add more expected data as needed
-        ];
+        try {
+            $sql = "SELECT * FROM $this->table_name";
+            $stmt = self::$conn->query($sql);
+            $lijst = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Doe een query: dit is een prepare en execute in 1 zonder placeholders
-        // $lijst = $conn->query("select invullen")->fetchAll();
-        
-        return $lijst;
+            return $lijst;
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return [];
+        }
     }
 
     /**
@@ -54,12 +54,18 @@ class Klant extends Database {
      * @return array
      */
     public function getKlant(int $klantId) : array {
-        // testdata
-        $lijst = [
-            'klantId' => 1, 'klantEmail' => 'test1@example.com', 'klantNaam' => 'Test 1', 'klantWoonplaats' => 'City 1', 'klantAdres' => 'Address 1', 'klantPostcode' => '1234AB'
-        ];
+        try {
+            $sql = "SELECT * FROM $this->table_name WHERE klantId = :klantId";
+            $stmt = self::$conn->prepare($sql);
+            $stmt->bindParam(':klantId', $klantId, PDO::PARAM_INT);
+            $stmt->execute();
+            $lijst = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $lijst;
+            return $lijst ?: [];
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return [];
+        }
     }
     
     public function dropDownKlant($row_selected = -1){
@@ -70,9 +76,9 @@ class Klant extends Database {
         echo "<select name='klantId'>";
         foreach ($lijst as $row){
             if($row_selected == $row["klantId"]){
-                echo "<option value='$row[klantId]' selected='selected'> $row[klantNaam] $row[klantEmail]</option>\n";
+                echo "<option value='$row[klantId]' selected='selected'> " . htmlspecialchars($row["klantNaam"] ?? '') . " " . htmlspecialchars($row["klantEmail"] ?? '') . "</option>\n";
             } else {
-                echo "<option value='$row[klantId]'> $row[klantNaam] $row[klantEmail]</option>\n";
+                echo "<option value='$row[klantId]'> " . htmlspecialchars($row["klantNaam"] ?? '') . " " . htmlspecialchars($row["klantEmail"] ?? '') . "</option>\n";
             }
         }
         echo "</select>";
@@ -87,31 +93,38 @@ class Klant extends Database {
         $txt = "<table>";
 
         // Voeg de kolomnamen boven de tabel
-        $txt .= getTableHeader($lijst[0]);
+        $txt .= "<tr>";
+        $txt .= "<th>klantId</th>";
+        $txt .= "<th>klantNaam</th>";
+        $txt .= "<th>klantEmail</th>";
+        $txt .= "<th>klantWoonplaats</th>";
+        $txt .= "<th>klantAdres</th>";
+        $txt .= "<th>klantPostcode</th>";
+        $txt .= "</tr>";
 
         foreach($lijst as $row){
             $txt .= "<tr>";
-            $txt .=  "<td>" . $row["klantId"] . "</td>";
-            $txt .=  "<td>" . $row["klantNaam"] . "</td>";
-            $txt .=  "<td>" . $row["klantEmail"] . "</td>";
-            $txt .=  "<td>" . $row["klantWoonplaats"] . "</td>";
-            $txt .=  "<td>" . $row["klantAdres"] . "</td>";
-            $txt .=  "<td>" . $row["klantPostcode"] . "</td>";
+            $txt .= "<td>" . htmlspecialchars($row["klantId"] ?? '') . "</td>";
+            $txt .= "<td>" . htmlspecialchars($row["klantNaam"] ?? '') . "</td>";
+            $txt .= "<td>" . htmlspecialchars($row["klantEmail"] ?? '') . "</td>";
+            $txt .= "<td>" . htmlspecialchars($row["klantWoonplaats"] ?? '') . "</td>";
+            $txt .= "<td>" . htmlspecialchars($row["klantAdres"] ?? '') . "</td>";
+            $txt .= "<td>" . htmlspecialchars($row["klantPostcode"] ?? '') . "</td>";
             
-            //Update
+            // Update
             // Wijzig knopje
-            $txt .=  "<td>";
-            $txt .= " 
-            <form method='post' action='update.php?klantId=$row[klantId]' >       
-                <button name='update'>Wzg</button>     
-            </form> </td>";
+            $txt .= "<td>
+                <form method='post' action='update.php?klantId={$row["klantId"]}'>
+                    <button name='update'>Wzg</button>
+                </form>
+            </td>";
 
-            //Delete
-            $txt .=  "<td>";
-            $txt .= " 
-            <form method='post' action='delete.php?klantId=$row[klantId]' >       
-                <button name='verwijderen'>Verwijderen</button>     
-            </form> </td>";  
+            // Delete
+            $txt .= "<td>
+                <form method='post' action='delete.php?klantId={$row["klantId"]}'>
+                    <button name='verwijderen'>Verwijderen</button>
+                </form>
+            </td>";
             $txt .= "</tr>";
         }
         $txt .= "</table>";
@@ -125,13 +138,37 @@ class Klant extends Database {
      * @return bool
      */
     public function deleteKlant(int $klantId) : bool {
-        // Implement delete functionality here
-        return true;
+        try {
+            // Doe een delete-query op basis van $klantId
+            $sql = "DELETE FROM $this->table_name WHERE klantId = :klantId";
+            $stmt = self::$conn->prepare($sql);
+            $stmt->bindParam(':klantId', $klantId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            return true;
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return false;
+        }
     }
 
     public function updateKlant($row) : bool {
-        // Implement update functionality here
-        return true;
+        try {
+            $sql = "UPDATE $this->table_name SET klantEmail = :klantEmail, klantNaam = :klantNaam, klantAdres = :klantAdres, klantPostcode = :klantPostcode, klantWoonplaats = :klantWoonplaats WHERE klantId = :klantId";
+            $stmt = self::$conn->prepare($sql);
+            $stmt->bindParam(':klantId', $row['klantId'], PDO::PARAM_INT);
+            $stmt->bindParam(':klantEmail', $row['klantEmail'], PDO::PARAM_STR);
+            $stmt->bindParam(':klantNaam', $row['klantNaam'], PDO::PARAM_STR);
+            $stmt->bindParam(':klantAdres', $row['klantAdres'], PDO::PARAM_STR);
+            $stmt->bindParam(':klantPostcode', $row['klantPostcode'], PDO::PARAM_STR);
+            $stmt->bindParam(':klantWoonplaats', $row['klantWoonplaats'], PDO::PARAM_STR);
+            $stmt->execute();
+
+            return true;
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return false;
+        }
     }
 
     /**
@@ -140,33 +177,32 @@ class Klant extends Database {
      */
     private function BepMaxKlantId() : int {
         // Bepaal uniek nummer
-        $sql = "SELECT MAX(klantId) + 1 FROM $this->table_name";
+        $sql="SELECT MAX(klantId)+1 FROM $this->table_name";
         return (int) self::$conn->query($sql)->fetchColumn();
     }
 
     /**
      * Summary of insertKlant
-     * @param array $row
-     * @return bool
+     * Voeg een nieuwe klant toe aan de database
+     * @param mixed $row Array met klantgegevens
+     * @return bool True als het invoegen succesvol is, anders False
      */
     public function insertKlant($row) : bool {
-        // Bepaal een unieke klantId
-        $klantId = $this->BepMaxKlantId();
+        try {
+            $sql = "INSERT INTO $this->table_name (klantEmail, klantNaam, klantAdres, klantPostcode, klantWoonplaats) VALUES (:klantEmail, :klantNaam, :klantAdres, :klantPostcode, :klantWoonplaats)";
+            $stmt = self::$conn->prepare($sql);
+            $stmt->bindParam(':klantEmail', $row['klantEmail'], PDO::PARAM_STR);
+            $stmt->bindParam(':klantNaam', $row['klantNaam'], PDO::PARAM_STR);
+            $stmt->bindParam(':klantAdres', $row['klantAdres'], PDO::PARAM_STR);
+            $stmt->bindParam(':klantPostcode', $row['klantPostcode'], PDO::PARAM_STR);
+            $stmt->bindParam(':klantWoonplaats', $row['klantWoonplaats'], PDO::PARAM_STR);
+            $stmt->execute();
 
-        // SQL query
-        $sql = "INSERT INTO $this->table_name (klantId, klantEmail, klantNaam, klantAdres, klantPostcode, klantWoonplaats) VALUES (:klantId, :klantEmail, :klantNaam, :klantAdres, :klantPostcode, :klantWoonplaats)";
-
-        // Prepare
-        $stmt = self::$conn->prepare($sql);
-
-        // Execute
-        return $stmt->execute([
-            ':klantId' => $klantId,
-            ':klantEmail' => $row['klantEmail'],
-            ':klantNaam' => $row['klantNaam'],
-            ':klantAdres' => $row['klantAdres'],
-            ':klantPostcode' => $row['klantPostcode'],
-            ':klantWoonplaats' => $row['klantWoonplaats']
-        ]);
+            return true;
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return false;
+        }
     }
 }
+?>
