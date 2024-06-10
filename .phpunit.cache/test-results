@@ -1,1 +1,0 @@
-{"version":1,"defects":{"KlantTest::testgetKlanten":5,"KlantTest::testGetKlant":5,"InsertTestVerkoopOrder::testInsertVerkoopOrderTrue":8},"times":{"KlantTest::testgetKlanten":0.002,"KlantTest::testGetKlant":0.017,"KlantInsertTest::testInsertKlantTrue":0.019,"InsertTestVerkoopOrder::testInsertVerkoopOrderTrue":0.026}}
