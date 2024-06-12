@@ -26,7 +26,7 @@ class Artikel extends Database {
      * @param string $searchQuery
      * @return void
      */
-    public function crudArtikel(string $searchQuery = '') : void {
+     public function crudArtikel(string $searchQuery = '') : void {
         // Haal gefilterde artikelen op uit de database mbv de method getArtikelen()
         $lijst = $this->getArtikelen($searchQuery);
 

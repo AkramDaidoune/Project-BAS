@@ -7,36 +7,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crud</title>
+    <title>Artikel Overzicht</title>
     <link rel="stylesheet" href="styleArtikel.css">
 </head>
 
 <body>
-    <h1>CRUD Artikel</h1>
+    <h1>Artikel Overzicht</h1>
     <nav>
         <a href='../index.html'>Home</a><br>
         <a href='insert.php'>Toevoegen nieuw artikel</a><br><br>
-      
     </nav>
- 
-     <form method="GET" action="read.php">
-        <input type="text" name="search" placeholder="Zoek artikel" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
+    <form method="GET" action="">
+        <input type="text" name="search" placeholder="Zoek Artikel" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
         <button type="submit">Zoeken</button>
     </form>
-    <?php
-    // Autoloader classes via composer
-    require '../../vendor/autoload.php';
 
-    use Bas\classes\Artikel;
+<?php
 
-    // Maak een object Artikel
-    $artikel = new Artikel;
+// Autoloader classes via composer
+require '../../vendor/autoload.php';
 
-    // Check if search query is set
-    $searchQuery = isset($_GET['search']) ? $_GET['search'] : null;
+use Bas\classes\Artikel;
 
-    // Start CRUD with search query if available
-    $artikel->crudArtikel($searchQuery);
-    ?>
+// Maak een object Artikel
+$artikel = new Artikel();
+
+// Check if search query is set and is not null
+$searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
+
+// Start CRUD with search query if available
+$artikel->crudArtikel($searchQuery);
+?>
 </body>
 </html>
+

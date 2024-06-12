@@ -1,12 +1,12 @@
 <?php
-// auteur: studentnaam
+// auteur: Akram D
 // functie: definitie class Klant
 namespace Bas\classes;
 
 use PDO;
+use Bas\classes\Database;
 
 include_once "functions.php";
-
 
 class Klant extends Database {
     public $klantId;
@@ -21,32 +21,42 @@ class Klant extends Database {
 
     /**
      * Summary of crudKlant
+     * @param string $searchQuery
      * @return void
      */
-    public function crudKlant() : void {
-        // Haal alle klanten op uit de database mbv de method getKlanten()
-        $lijst = $this->getKlanten();
+     public function crudKlant(string $searchQuery = '') : void {
+        // Haal gefilterde artikelen op uit de database mbv de method getArtikelen()
+        $lijst = $this->getKlanten($searchQuery);
 
-        // Print een HTML tabel van de lijst    
+        // Print een HTML tabel van de lijst   
         $this->showTable($lijst);
     }
-
     /**
-     * Summary of getKlanten
-     * @return array
-     */
-    public function getKlanten() : array {
-        try {
-            $sql = "SELECT * FROM $this->table_name";
-            $stmt = self::$conn->query($sql);
-            $lijst = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            return $lijst;
-        } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
-            return [];
+ * Summary of getKlanten
+ * @param string $searchQuery
+ * @return array
+ */
+public function getKlanten(string $searchQuery = '') : array {
+    try {
+        $sql = "SELECT klantId, klantEmail, klantNaam, klantWoonplaats, klantAdres, klantPostcode FROM $this->table_name";
+        if (!empty($searchQuery)) {
+            $sql .= " WHERE klantNaam LIKE :searchQuery";
         }
+        $stmt = self::$conn->prepare($sql);
+        if (!empty($searchQuery)) {
+            $stmt->bindValue(':searchQuery', '%' . $searchQuery . '%', PDO::PARAM_STR);
+        }
+        $stmt->execute();
+        $lijst = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $lijst;
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+        return [];
     }
+}
+
+
 
     /**
      * Summary of getKlant

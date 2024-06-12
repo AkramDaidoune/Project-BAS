@@ -9,7 +9,7 @@ use Bas\classes\Klant;
 if(isset($_POST["verwijderen"])){
 	
 	// Maak een object Klant
-	
+	 
 	
 	// Delete Klant op basis van NR
 	

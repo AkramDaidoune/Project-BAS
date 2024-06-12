@@ -58,7 +58,7 @@ if (isset($_GET['verkOrdId'])) {
 <body>
 <h1>CRUD Verkooporder</h1>
 <h2>Wijzigen</h2>
-<h3>Water</h3>
+
 <?php if ($message): ?>
     <p><?php echo $message; ?></p>
 <?php endif; ?>
