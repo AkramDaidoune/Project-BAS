@@ -162,25 +162,29 @@ public function getKlanten(string $searchQuery = '') : array {
         }
     }
 
-    public function updateKlant($row) : bool {
+    public function updateKlant(array $row) : bool {
         try {
-            $sql = "UPDATE $this->table_name SET klantEmail = :klantEmail, klantNaam = :klantNaam, klantAdres = :klantAdres, klantPostcode = :klantPostcode, klantWoonplaats = :klantWoonplaats WHERE klantId = :klantId";
+            $sql = "UPDATE " . $this->table_name . " SET 
+                klantNaam = :klantNaam, 
+                klantEmail = :klantEmail, 
+                klantAdres = :klantAdres, 
+                klantPostcode = :klantPostcode, 
+                klantWoonplaats = :klantWoonplaats 
+                WHERE klantId = :klantId";
             $stmt = self::$conn->prepare($sql);
             $stmt->bindParam(':klantId', $row['klantId'], PDO::PARAM_INT);
-            $stmt->bindParam(':klantEmail', $row['klantEmail'], PDO::PARAM_STR);
             $stmt->bindParam(':klantNaam', $row['klantNaam'], PDO::PARAM_STR);
+            $stmt->bindParam(':klantEmail', $row['klantEmail'], PDO::PARAM_STR);
             $stmt->bindParam(':klantAdres', $row['klantAdres'], PDO::PARAM_STR);
             $stmt->bindParam(':klantPostcode', $row['klantPostcode'], PDO::PARAM_STR);
             $stmt->bindParam(':klantWoonplaats', $row['klantWoonplaats'], PDO::PARAM_STR);
-            $stmt->execute();
-
-            return true;
+            return $stmt->execute();
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
             return false;
         }
     }
-
+    
     /**
      * Summary of BepMaxKlantId
      * @return int

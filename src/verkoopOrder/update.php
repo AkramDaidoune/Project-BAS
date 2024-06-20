@@ -1,4 +1,5 @@
 <?php
+
 // auteur: Akram D
 // functie: update verkooporder
 
@@ -42,10 +43,14 @@ if (isset($_POST["update"]) && $_POST["update"] == "Wijzigen") {
     }
 }
 
+
+
 if (isset($_GET['verkOrdId'])) {
     $row = $verkooporder->getVerkoopOrder($_GET['verkOrdId']);
     $klanten = $verkooporder->getKlanten();
     $artikelen = $verkooporder->getArtikelen();
+
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -63,8 +68,7 @@ if (isset($_GET['verkOrdId'])) {
     <p><?php echo $message; ?></p>
 <?php endif; ?>
 <form method="post">
-    <input type="hidden" name="verkOrdId" 
-        value="<?php if (isset($row)) { echo $row['verkOrdId']; } ?>">
+    <input type="hidden" name="verkOrdId" value="<?php if (isset($row)) { echo $row['verkOrdId']; } ?>">
     <label for="klantId">Klant:</label>
     <select id="klantId" name="klantId" required>
         <option value="">Selecteer Klant</option>
@@ -96,15 +100,12 @@ if (isset($_GET['verkOrdId'])) {
     </select>
     <br><br>
     <input type="submit" name="update" value="Wijzigen">
-</form></br>
+</form><br>
 
 <a href="read.php">Terug</a>
 
 </body>
 </html>
 
-<?php
-} else {
-    echo "Geen verkOrdId opgegeven<br>";
-}
-?>
+
+

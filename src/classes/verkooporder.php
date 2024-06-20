@@ -161,7 +161,6 @@ class VerkoopOrder extends Database {
     }
 
     public function updateVerkoopOrder($row) : bool {
-        // Voer de update van de verkooporder uit
         try {
             $sql = "UPDATE $this->table_name SET klantId = :klantId, artId = :artId, verkOrdDatum = :verkOrdDatum, verkOrdBestAantal = :verkOrdBestAantal, verkOrdStatus = :verkOrdStatus WHERE verkOrdId = :verkOrdId";
             $stmt = self::$conn->prepare($sql);
@@ -170,7 +169,7 @@ class VerkoopOrder extends Database {
             $stmt->bindParam(':artId', $row['artId'], PDO::PARAM_INT);
             $stmt->bindParam(':verkOrdDatum', $row['verkOrdDatum'], PDO::PARAM_STR);
             $stmt->bindParam(':verkOrdBestAantal', $row['verkOrdBestAantal'], PDO::PARAM_INT);
-            $stmt->bindParam(':verkOrdStatus', $row['verkOrdStatus'], PDO::PARAM_INT);
+            $stmt->bindParam(':verkOrdStatus', $row['verkOrdStatus'], PDO::PARAM_STR);
             $stmt->execute();
             
             return true;
@@ -179,6 +178,7 @@ class VerkoopOrder extends Database {
             return false;
         }
     }
+    
 
     /**
      * Summary of getKlanten

@@ -150,18 +150,33 @@ class Artikel extends Database {
      * @return bool
      */
     public function updateArtikel(array $row) : bool {
-        $sql = "UPDATE " . $this->table_name . " SET artOmschrijving = :artOmschrijving, artInkoop = :artInkoop, artVerkoop = :artVerkoop, artVoorraad = :artVoorraad, artMinVoorraad = :artMinVoorraad, artMaxVoorraad = :artMaxVoorraad, artLocatie = :artLocatie WHERE artId = :artId";
-        $stmt = self::$conn->prepare($sql);
-        $stmt->bindParam(':artId', $row['artId'], PDO::PARAM_INT);
-        $stmt->bindParam(':artOmschrijving', $row['artOmschrijving'], PDO::PARAM_STR);
-        $stmt->bindParam(':artInkoop', $row['artInkoop'], PDO::PARAM_STR);
-        $stmt->bindParam(':artVerkoop', $row['artVerkoop'], PDO::PARAM_STR);
-        $stmt->bindParam(':artVoorraad', $row['artVoorraad'], PDO::PARAM_INT);
-        $stmt->bindParam(':artMinVoorraad', $row['artMinVoorraad'], PDO::PARAM_INT);
-        $stmt->bindParam(':artMaxVoorraad', $row['artMaxVoorraad'], PDO::PARAM_INT);
-        $stmt->bindParam(':artLocatie', $row['artLocatie'], PDO::PARAM_STR);
-        return $stmt->execute();
+        try {
+            $sql = "UPDATE " . $this->table_name . " SET 
+                artOmschrijving = :artOmschrijving, 
+                artInkoop = :artInkoop, 
+                artVerkoop = :artVerkoop, 
+                artVoorraad = :artVoorraad, 
+                artMinVoorraad = :artMinVoorraad, 
+                artMaxVoorraad = :artMaxVoorraad, 
+                artLocatie = :artLocatie 
+                WHERE artId = :artId";
+            $stmt = self::$conn->prepare($sql);
+            $stmt->bindParam(':artId', $row['artId'], PDO::PARAM_INT);
+            $stmt->bindParam(':artOmschrijving', $row['artOmschrijving'], PDO::PARAM_STR);
+            $stmt->bindParam(':artInkoop', $row['artInkoop'], PDO::PARAM_STR);
+            $stmt->bindParam(':artVerkoop', $row['artVerkoop'], PDO::PARAM_STR);
+            $stmt->bindParam(':artVoorraad', $row['artVoorraad'], PDO::PARAM_INT);
+            $stmt->bindParam(':artMinVoorraad', $row['artMinVoorraad'], PDO::PARAM_INT);
+            $stmt->bindParam(':artMaxVoorraad', $row['artMaxVoorraad'], PDO::PARAM_INT);
+            $stmt->bindParam(':artLocatie', $row['artLocatie'], PDO::PARAM_STR);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return false;
+        }
     }
+    
+    
 
     /**
      * Summary of BepMaxArtId
@@ -199,6 +214,22 @@ class Artikel extends Database {
         // Execute
         return $stmt->execute();
     }
+
+
+
+    public function getBeschikbareArtikelen() : array {
+        $sql = "SELECT DISTINCT artOmschrijving FROM " . $this->table_name;
+        $stmt = self::$conn->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    public function getBeschikbareLocaties() : array {
+        $sql = "SELECT DISTINCT artLocatie FROM " . $this->table_name;
+        $stmt = self::$conn->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+
 }
 
 
